@@ -36,26 +36,26 @@ function ensureTempFile() {
 
 // Route to handle form submission
 app.post("/submit", (req, res) => {
-  ensureTempFile();
+  console.log("Data file path:", dataFilePath); // This should now work
+
   const { name, password, age, height, weight } = req.body;
   const bmr = Math.floor(10 * weight + 6.25 * height - 5 * age + 5);
 
-  let users = JSON.parse(fs.readFileSync(tempDataFilePath));
-
+  let users = JSON.parse(fs.readFileSync(dataFilePath));
   users.push({ name, password, age, height, weight, bmr });
-
-  fs.writeFileSync(tempDataFilePath, JSON.stringify(users, null, 2));
+  fs.writeFileSync(dataFilePath, JSON.stringify(users, null, 2));
 
   res.send(`
-        <h1>Form Submitted</h1>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Password:</strong> ${password}</p>
-        <p><strong>Age:</strong> ${age}</p>
-        <p><strong>Height:</strong> ${height} cm</p>
-        <p><strong>Weight:</strong> ${weight} kg</p>
-        <p><strong>Daily calories:</strong> ${bmr}</p>
-    `);
+    <h1>Form Submitted</h1>
+    <p><strong>Name:</strong> ${name}</p>
+    <p><strong>Password:</strong> ${password}</p>
+    <p><strong>Age:</strong> ${age}</p>
+    <p><strong>Height:</strong> ${height} cm</p>
+    <p><strong>Weight:</strong> ${weight} kg</p>
+    <p><strong>Daily calories:</strong> ${bmr}</p>
+  `);
 });
+
 
 app.get("/users", (req, res) => {
   ensureTempFile();
@@ -82,6 +82,7 @@ app.post("/login", (req, res) => {
 
 app.get("/login-status", (req, res) => {
   const loggedInUser = req.session?.user;
+  console.log("Logged-in user:", loggedInUser);
 
   if (loggedInUser) {
     const { name, bmr } = loggedInUser;
